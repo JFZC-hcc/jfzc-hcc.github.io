@@ -26,9 +26,5 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-# local personal content and overrides
-/src/config/
-/src/content/
-/src/contents/
-/public/
-/config/
+*.md:Zone.Identifier
+*:Zone.Identifier
