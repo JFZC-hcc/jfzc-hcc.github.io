@@ -3,7 +3,7 @@ title: "Atlas — 个人网站搭建"
 description: "基于 Astro 模板修改，搭建属于自己的个人小站"
 date: 2026-07-25
 tags: ["Astro", "TypeScript", "Tailwind CSS", "Web"]
-role: ["全栈学习者","ai学习","vibecoding"]
+role: "全栈学习者+ai学习+vibecoding"
 repo: "https://github.com/JFZC-hcc/jfzc-hcc.github.io"
 featured: true
 ---
