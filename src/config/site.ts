@@ -18,7 +18,7 @@ const shared = {
 		images: ["/backgrounds/bg1.png", "/backgrounds/bg2.png", "/backgrounds/bg3.png"],
 		interval: 8000,
 		blur: "0px",
-		opacity: 0.6,
+		opacity: 0.4,
 		scale: 1,
 		overlay: "radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 40%), linear-gradient(180deg, rgba(5,5,5,0.7) 0%, rgba(0,0,0,0.8) 55%, rgba(9,9,9,0.9) 100%)",
 		rain: {
