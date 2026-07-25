@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Build
-        run: npm run build
+        run: npx astro build --verbose
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
