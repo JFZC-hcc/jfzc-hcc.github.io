@@ -1,0 +1,103 @@
+---
+interface Props {
+	today: {
+		timeZone: string;
+		dateLocale: string;
+		greetings: readonly string[];
+	};
+}
+
+const { today } = Astro.props;
+const { dateLocale, greetings, timeZone } = today;
+---
+
+<script define:vars={{ dateLocale, greetings, timeZone }} data-astro-rerun>
+	const homeEnhancementsState = window;
+
+	const cleanupHomeEnhancements = () => {
+		if (homeEnhancementsState.homeEnhancementsInterval) {
+			window.clearInterval(
+				homeEnhancementsState.homeEnhancementsInterval,
+			);
+			delete homeEnhancementsState.homeEnhancementsInterval;
+		}
+	};
+
+	homeEnhancementsState.homeEnhancementsConfig = {
+		dateLocale,
+		greetings,
+		timeZone,
+	};
+
+	const mountHomeEnhancements = () => {
+		const config = homeEnhancementsState.homeEnhancementsConfig;
+		const greeting = document.querySelector("[data-time-greeting]");
+		const time = document.querySelector("[data-melbourne-time]");
+
+		cleanupHomeEnhancements();
+		if (!greeting && !time) return;
+
+		const formatter = new Intl.DateTimeFormat(config.dateLocale, {
+			timeZone: config.timeZone,
+			year: "numeric",
+			month: "2-digit",
+			day: "2-digit",
+			hour: "2-digit",
+			minute: "2-digit",
+			second: "2-digit",
+			hour12: false,
+		});
+
+		const hourFormatter = new Intl.DateTimeFormat("en-AU", {
+			timeZone: config.timeZone,
+			hour: "numeric",
+			hour12: false,
+		});
+
+		const updateGreeting = () => {
+			if (!greeting) return;
+
+			const hour = Number(hourFormatter.format(new Date()));
+			const index =
+				hour < 5
+					? 0
+					: hour < 8
+						? 1
+						: hour < 11
+							? 2
+							: hour < 13
+								? 3
+								: hour < 18
+									? 4
+									: 5;
+			greeting.textContent =
+				config.greetings[index] ??
+				config.greetings.at(-1) ??
+				greeting.textContent;
+		};
+
+		const updateTime = () => {
+			if (!time) return;
+			time.textContent = formatter.format(new Date());
+		};
+
+		updateGreeting();
+		updateTime();
+
+		homeEnhancementsState.homeEnhancementsInterval = window.setInterval(
+			() => {
+				updateGreeting();
+				updateTime();
+			},
+			1000,
+		);
+	};
+
+	mountHomeEnhancements();
+
+	if (!homeEnhancementsState.homeEnhancementsEventsReady) {
+		homeEnhancementsState.homeEnhancementsEventsReady = true;
+		document.addEventListener("astro:page-load", mountHomeEnhancements);
+		document.addEventListener("astro:before-swap", cleanupHomeEnhancements);
+	}
+</script>

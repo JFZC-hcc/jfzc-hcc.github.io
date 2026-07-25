@@ -1,0 +1,55 @@
+---
+import SectionHeading from "../components/SectionHeading.astro";
+
+export interface FriendLink {
+    title: string;
+    url: string;
+    avatar?: string;
+    description?: string;
+}
+
+interface Props {
+    kicker?: string;
+    title: string;
+    description?: string;
+    links: FriendLink[];
+}
+
+const { kicker, title, description, links } = Astro.props;
+---
+
+<section class="mx-auto max-w-6xl px-5 py-16">
+    <SectionHeading kicker={kicker} title={title} description={description} />
+    <div class="grid gap-4 md:grid-cols-2">
+        {
+            links.map((link) => (
+                <a
+                    href={link.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    class="flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.03] p-5 transition hover:border-white/30 hover:bg-white/[0.06]"
+                >
+                    {link.avatar && (
+                        <img
+                            src={link.avatar}
+                            alt={`${link.title} avatar`}
+                            class="h-14 w-14 shrink-0 rounded-full border border-white/10 bg-zinc-900 object-cover"
+                            loading="lazy"
+                            onerror="this.style.display='none'"
+                        />
+                    )}
+                    <div class="min-w-0">
+                        <p class="truncate text-base font-semibold text-white">
+                            {link.title}
+                        </p>
+                        {link.description && (
+                            <p class="mt-1 truncate text-sm text-zinc-400">
+                                {link.description}
+                            </p>
+                        )}
+                    </div>
+                </a>
+            ))
+        }
+    </div>
+</section>
