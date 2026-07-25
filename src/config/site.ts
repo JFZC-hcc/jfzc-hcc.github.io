@@ -88,7 +88,7 @@ const siteConfigs = {
 					{
 						type: "linkGrid", props: {
 							items: [
-								{ label: "博客与碎碎念,", href: "/blog" },
+								{ label: "博客与碎碎念", href: "/blog" },
 								{ label: "目前做的小玩意", href: "/projects" },
 								{ label: "了解一下我", href: "/about" },
 								{ label: "联系方式", href: "/contact" },
@@ -110,8 +110,8 @@ const siteConfigs = {
 						type: "blogPreview",
 						props: {
 							kicker: "Notes",
-							title: "最新笔记",
-							description: "课堂、前端、设计、生活观察，都可以变成 Markdown 里的碎碎念。",
+							title: "最新博客",
+							description: "JFZC的碎碎念博客",
 							limit: 3,
 						},
 					},
