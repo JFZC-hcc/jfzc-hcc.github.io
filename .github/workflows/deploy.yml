@@ -14,20 +14,41 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+
       - name: Install dependencies
         run: npm ci
+
       - name: Clean build cache
         run: rm -rf .astro dist
+
       - name: Build site
-        run: npx astro build
-      - name: Upload build log on failure
+        id: build
+        run: |
+          npx astro build 2>&1 | tee /tmp/astro-build.log
+          exit ${PIPESTATUS[0]}
+
+      - name: Show build log on failure
         if: failure()
-        run: cat /home/runner/.npm/_logs/*.log || echo "No npm logs"
+        run: |
+          echo "### ⚠️ Astro Build Failed" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -200 /tmp/astro-build.log 2>/dev/null >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Check build output
+        if: failure()
+        run: |
+          echo "## ⚠️ Build failed - logs" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/astro-build.log 2>/dev/null | tail -100 >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
