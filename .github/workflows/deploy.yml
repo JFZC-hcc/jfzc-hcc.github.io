@@ -25,11 +25,9 @@ jobs:
         run: rm -rf .astro dist
       - name: Build site
         run: npx astro build
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+      - name: Upload build log on failure
+        if: failure()
+        run: cat /home/runner/.npm/_logs/*.log || echo "No npm logs"
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
