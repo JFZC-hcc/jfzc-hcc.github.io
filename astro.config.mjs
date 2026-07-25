@@ -11,6 +11,7 @@ const adapter = dynamicMode ? (await import('@astrojs/node')).default({ mode: 's
 
 // https://astro.build/config
 export default defineConfig({
+	site: 'https://jfzc-hcc.github.io',
 	output: dynamicMode ? 'server' : 'static',
 	adapter,
 	markdown: {
