@@ -198,15 +198,15 @@ const siteConfigs = {
 				],
 			},
 			blog: {
-				title: "博客 / 笔记",
-				description: "关于课程、前端、设计、生活和长期学习的笔记。",
+				title: "博客与笔记",
+				description: "自己平常写的博客或者摘抄的笔记",
 				modules: [
 					{
 						type: "blogIndex",
 						props: {
 							kicker: "Notes",
-							title: "博客 / 笔记",
-							description: "用 Markdown 记录学习过程、项目复盘、课堂笔记和日常观察。草稿文章会在列表中自动过滤。",
+							title: "博客与笔记",
+							description: "自己平常写的博客或者摘抄的笔记",
 							labels: {
 								search: "搜索标题、摘要或标签",
 								all: "全部",
