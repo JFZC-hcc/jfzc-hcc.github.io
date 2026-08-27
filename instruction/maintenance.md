@@ -48,6 +48,8 @@ src/content/blog/<文件名>.md
 
 > **注意**：文件名不要用中文或特殊符号，推荐全小写英文+连字符。
 
+> **配图约定**：新建文章后，`public/blog/<文件名>/` 会自动创建（开发服务器实时监听、构建时自动同步）。把文章的图片放进这个同名文件夹即可。
+
 ### 元数据格式（Frontmatter）
 
 每篇文章顶部必须有 `---` 包裹的 YAML 元数据：
@@ -75,7 +77,7 @@ draft: false                ← 可选，true=草稿，不显示在列表
 | `pubDate` | ✅ | 发布日期，格式 `YYYY-MM-DD` |
 | `tags` | ❌ | 标签数组，如 `["Astro", "前端"]` |
 | `updatedDate` | ❌ | 最后更新日期 |
-| `cover` | ❌ | 封面图路径，建议放 `public/blog/` 下 |
+| `cover` | ❌ | 封面图路径，建议放 `public/blog/<文章名>/` 下 |
 | `draft` | ❌ | 设为 `true` 则文章仅在构建时可见，列表页不显示 |
 
 ### 正文 Markdown 语法速查
@@ -102,6 +104,8 @@ draft: false                ← 可选，true=草稿，不显示在列表
 [链接文字](https://example.com)
 
 ![图片alt](/blog/my-image.png)
+
+> 图片推荐放在 `public/blog/<文章名>/` 下，例如 `public/blog/galgame-review/1.png` → `![图片alt](/blog/galgame-review/1.png)`
 
 ---
 （水平分隔线）
@@ -354,20 +358,41 @@ modules: [
 ```
 public/
 ├── backgrounds/     ← 网站背景图
-├── blog/            ← 博客文章配图
+├── blog/            ← 博客文章配图（每篇文章一个同名子文件夹）
 ├── projects/        ← 项目截图/配图
 ├── site/            ← 网站组件图片（头像、友链头像等）
 ├── favicon.ico
 └── favicon.svg
 ```
 
+### 博客配图约定：一篇文章一个文件夹
+
+每篇博客文章对应一个**与文章同名的资源文件夹**：
+
+```
+src/content/blog/我的新文章.md      ← 文章
+public/blog/我的新文章/图片1.png     ← 该文章的配图
+```
+
+- 新建 `.md` 文章后，`public/blog/` 下会自动创建同名文件夹（开发服务器运行时实时监听；构建时也会自动同步）。
+- 也可以手动运行 `npm run blog:folders` 同步一次。
+- 图片引用方式：`![图片alt](/blog/我的新文章/图片1.png)`
+- 封面图 `cover` 同理：`cover: "/blog/我的新文章/cover.png"`
+
 ### 引用方式
 
 ```
 public/site/avatar.png          →  /site/avatar.png
-public/blog/cover.jpg           →  /blog/cover.jpg
+public/blog/我的新文章/cover.jpg  →  /blog/我的新文章/cover.jpg
 public/backgrounds/bg1.png      →  /backgrounds/bg1.png
 ```
+
+### 资源文件夹自动创建
+
+- **开发时**：`npm run dev` 启动后，脚本会监听 `src/content/blog/`，新增 `.md` 文件时自动在 `public/blog/` 下创建同名文件夹。
+- **构建时**：`npm run build` 前会自动同步一次，确保所有文章都有对应文件夹。
+- **手动同步**：`npm run blog:folders`（一次性）、`npm run blog:folders:watch`（监听模式）。
+- 脚本只创建缺失的文件夹，不会删除或移动任何已有文件，可放心重复运行。
 
 ---
 
@@ -387,4 +412,4 @@ npm run build
 
 ---
 
-> 最后更新：2026-07-25
+> 最后更新：2026-08-26

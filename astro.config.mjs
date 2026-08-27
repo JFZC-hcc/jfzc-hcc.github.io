@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import rehypeKatex from 'rehype-katex';
+import blogFolders from './src/integrations/blog-folders';
 import remarkDisplayMath from './src/config/remarkDisplayMath.mjs';
 import remarkMath from 'remark-math';
 import remarkWikiLinks from './src/config/remarkWikiLinks.mjs';
@@ -25,4 +26,5 @@ export default defineConfig({
 	vite: {
 		plugins: [tailwindcss()],
 	},
+	integrations: [blogFolders()],
 });

@@ -3,7 +3,7 @@ title: "《さくら、もゆ。 -as the Night's，Reincarnation-》游玩短评
 description: "漆原雪人献给成年人的一部童话"
 pubDate: 2026-06-07
 tags: ["galgame", "游玩感受","F社"]
-cover: "/blog/a75d7408-8951-487f-a948-5fbc939678a9.png"
+cover: "/blog/《さくら、もゆ。 -as the Night's，Reincarnation-》游玩短评/a75d7408-8951-487f-a948-5fbc939678a9.png"
 ---
 
 

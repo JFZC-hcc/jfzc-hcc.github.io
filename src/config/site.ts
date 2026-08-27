@@ -15,10 +15,10 @@ const shared = {
 	emailIcon: "@",
 	avatar: "/site/avatar.png",
 	background: {
-		images: ["/backgrounds/bg1.png", "/backgrounds/bg2.png", "/backgrounds/bg3.png"],
+		images: ["/backgrounds/bg1.png", "/backgrounds/bg2.png", "/backgrounds/bg3.png", "/backgrounds/bg4.png", "/backgrounds/bg5.png"],
 		interval: 8000,
 		blur: "0px",
-		opacity: 0.8,
+		opacity: 0.9,
 		scale: 1,
 		overlay: "radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 40%), linear-gradient(180deg, rgba(5,5,5,0.7) 0%, rgba(0,0,0,0.8) 55%, rgba(9,9,9,0.9) 100%)",
 		rain: {
@@ -42,7 +42,7 @@ const siteConfigs = {
 	zh: {
 		...shared,
 		title: "这里是JFZC的个人博客",
-		description: "这个人还没有想好在网页的底端该写点什么",
+		description: "希望活成一个纯粹自由的人",
 		nav: [
 			{ label: "首页", href: "/" },
 			{ label: "关于我", href: "/about" },
@@ -58,7 +58,7 @@ const siteConfigs = {
 		],
 		today: {
 			title: "目前的个人工作进度",
-			activity: "正在折腾一些关于计算机的玩意",
+			activity: "正在尝试从0开始学习dsh的插件开发",
 			timeLabel: "我的当前时间",
 			timeZone: "Asia/Shanghai",
 			dateLocale: "zh-CN",

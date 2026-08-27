@@ -14,6 +14,8 @@
     "start": "node ./scripts/start-server.mjs",
     "preview": "astro preview",
     "setup": "node ./scripts/setup.mjs",
+    "blog:folders": "node ./scripts/blog-folders.mjs",
+    "blog:folders:watch": "node ./scripts/blog-folders.mjs --watch",
     "pm2:start": "npm run build:dynamic && pm2 start ecosystem.config.cjs",
     "pm2:restart": "npm run build:dynamic && pm2 restart atlas-dynamic",
     "pm2:logs": "pm2 logs atlas-dynamic",

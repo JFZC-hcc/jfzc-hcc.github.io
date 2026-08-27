@@ -37,7 +37,7 @@ src/
 
 public/
 ├── backgrounds/         ← 背景图
-├── blog/                ← 博客配图
+├── blog/                ← 博客配图（每篇文章一个同名子文件夹，自动创建）
 ├── projects/            ← 项目配图
 └── site/                ← 网站组件图片（头像等）
 
