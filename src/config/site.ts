@@ -15,7 +15,7 @@ const shared = {
 	emailIcon: "@",
 	avatar: "/site/avatar.png",
 	background: {
-		images: ["/backgrounds/bg1.png", "/backgrounds/bg2.png", "/backgrounds/bg3.png", "/backgrounds/bg4.png", "/backgrounds/bg5.png"],
+		images: ["/backgrounds/bg1.png", "/backgrounds/bg2.png", "/backgrounds/bg3.png", "/backgrounds/bg4.png", "/backgrounds/bg5.png","/backgrounds/bg6.png", "/backgrounds/bg7.png", "/backgrounds/bg8.png", "/backgrounds/bg9.png", "/backgrounds/bg10.png"],
 		interval: 8000,
 		blur: "0px",
 		opacity: 0.9,
