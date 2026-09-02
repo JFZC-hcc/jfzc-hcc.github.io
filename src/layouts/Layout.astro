@@ -20,25 +20,24 @@ const pageTitle =
 const background = siteConfig.background;
 const rain = background.rain;
 const hasImages = background.images && background.images.length > 0;
-const backgroundImageStyle = hasImages
-	? [
-			`background-image: url("${background.images[0]}")`,
-			`filter: blur(${background.blur})`,
-			`opacity: ${background.opacity}`,
-			`transform: scale(${background.scale})`,
-			"transition: opacity 1.5s ease-in-out",
-		].join("; ")
-	: [
-			`background-image: url("")`,
-			`filter: blur(${background.blur})`,
-			`opacity: ${background.opacity}`,
-			`transform: scale(${background.scale})`,
-		].join("; ");
 const backgroundImageUrls = hasImages
 	? JSON.stringify(background.images)
 	: "[]";
 const backgroundInterval = background.interval ?? 8000;
 const backgroundOverlayStyle = `background: ${background.overlay}`;
+// 双层背景:layer 0 显示当前图,layer 1 预留给下一张做交叉淡入淡出
+const layerStyle = (withImage: boolean) => {
+	const showImage = hasImages && withImage;
+	return [
+		`background-image: ${
+			showImage ? `url("${background.images[0]}")` : "none"
+		}`,
+		`filter: blur(${background.blur})`,
+		`opacity: ${showImage ? background.opacity : 0}`,
+		`transform: scale(${background.scale})`,
+		"transition: opacity 1.5s ease-in-out",
+	].join("; ");
+};
 ---
 
 <!doctype html>
@@ -64,11 +63,23 @@ const backgroundOverlayStyle = `background: ${background.overlay}`;
 		>
 			<div
 				id="bg-carousel"
-				class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-				style={backgroundImageStyle}
+				class="absolute inset-0"
 				data-bg-images={backgroundImageUrls}
 				data-bg-interval={backgroundInterval}
+				data-bg-opacity={hasImages ? background.opacity : 0}
 			>
+				<div
+					class="absolute inset-0 bg-cover bg-center bg-no-repeat"
+					data-bg-layer
+					style={layerStyle(true)}
+				>
+				</div>
+				<div
+					class="absolute inset-0 bg-cover bg-center bg-no-repeat"
+					data-bg-layer
+					style={layerStyle(false)}
+				>
+				</div>
 			</div>
 			<div class="absolute inset-0" style={backgroundOverlayStyle}></div>
 			{
@@ -104,25 +115,118 @@ const backgroundOverlayStyle = `background: ${background.overlay}`;
 
 <script>
 	// Background image carousel
+	// 双层图层交叉淡入淡出:下一张先预加载并放到隐藏层,再同步切换透明度,
+	// 因此任意时刻都有背景可见,不会出现"无背景"的空白阶段。
 	const bgEl = document.querySelector<HTMLElement>("#bg-carousel");
 	if (bgEl) {
 		const imagesAttr = bgEl.dataset.bgImages;
 		const images: string[] = imagesAttr ? JSON.parse(imagesAttr) : [];
 		const interval = Number(bgEl.dataset.bgInterval) || 8000;
+		const layers = Array.from(
+			bgEl.querySelectorAll<HTMLElement>("[data-bg-layer]"),
+		);
 
-		if (images.length > 1) {
+		if (images.length > 1 && layers.length >= 2) {
+			const FADE_MS = 1500;
+			const holder = window as unknown as {
+				__bgCarouselTimer?: number;
+			};
+			// 页面间导航后会重新执行本脚本,先清掉旧定时器避免叠加
+			if (holder.__bgCarouselTimer !== undefined) {
+				window.clearInterval(holder.__bgCarouselTimer);
+			}
+
+			const bad = new Set<number>(); // 加载失败的图(如文件不存在)
+			let active = 0; // 当前可见图层
 			let currentIndex = 0;
-			const origOpacity = bgEl.style.opacity || "1";
+			let busy = false;
 
-			setInterval(() => {
-				currentIndex = (currentIndex + 1) % images.length;
-				bgEl.style.transition = "opacity 1.5s ease-in-out";
-				bgEl.style.opacity = "0";
-				setTimeout(() => {
-					bgEl.style.backgroundImage = `url("${images[currentIndex]}")`;
-					bgEl.style.opacity = origOpacity;
-				}, 1500);
-			}, interval);
+			const bgUrlOf = (el: HTMLElement): string => {
+				const bg = el.style.backgroundImage;
+				const match = bg?.match(/url\("(.*)"\)/);
+				return match ? match[1] : "";
+			};
+
+			// 恢复被 View Transition 保留下来的状态(确定当前实际可见的图)
+			const visibleLayer = layers.find(
+				(el) => bgUrlOf(el) !== "" && el.style.opacity !== "0",
+			);
+			if (visibleLayer) {
+				active = layers.indexOf(visibleLayer);
+				const url = bgUrlOf(visibleLayer);
+				const found = images.indexOf(url);
+				if (found >= 0) currentIndex = found;
+			}
+			layers.forEach((el, i) => {
+				if (i !== active) el.style.opacity = "0";
+			});
+
+			const origOpacity =
+				bgEl.dataset.bgOpacity !== undefined
+					? bgEl.dataset.bgOpacity
+					: "1";
+
+			// 从 from 起找下一个未失效的图片索引,跳过加载失败的图
+			const nextValidIndex = (from: number): number => {
+				for (let k = 0; k < images.length; k++) {
+					const idx = (from + k) % images.length;
+					if (!bad.has(idx)) return idx;
+				}
+				return -1;
+			};
+
+			const swapToNext = () => {
+				if (busy) return;
+				const nextIndex = nextValidIndex(currentIndex + 1);
+				if (nextIndex === -1) return; // 全部图片失效,保持当前背景
+				busy = true;
+
+				const nextLayer = layers[1 - active];
+				const preloader = new Image();
+				let settled = false;
+				const finish = () => {
+					if (!settled) {
+						settled = true;
+						busy = false;
+					}
+				};
+				// 加载超时兜底,避免 busy 卡死轮播
+				const fallback = window.setTimeout(
+					finish,
+					Math.max(interval, 5000),
+				);
+
+				preloader.onload = () => {
+					window.clearTimeout(fallback);
+					// 新图已就绪,先放到隐藏图层(它此刻透明,不会闪烁),
+					// 随后两层同步渐变:旧层淡出、新层淡入
+					nextLayer.style.backgroundImage = `url("${images[nextIndex]}")`;
+					nextLayer.style.opacity = origOpacity;
+					layers[active].style.opacity = "0";
+					const previous = active;
+					window.setTimeout(() => {
+						currentIndex = nextIndex;
+						active = 1 - previous;
+						finish();
+					}, FADE_MS + 80);
+				};
+				preloader.onerror = () => {
+					window.clearTimeout(fallback);
+					bad.add(nextIndex);
+					finish();
+				};
+				preloader.src = images[nextIndex];
+			};
+
+			// 预热其余图片,保证切换瞬间图片已经在浏览器缓存里
+			images.forEach((src, i) => {
+				if (i === 0 || bad.has(i)) return;
+				const pre = new Image();
+				pre.onerror = () => bad.add(i);
+				pre.src = src;
+			});
+
+			holder.__bgCarouselTimer = window.setInterval(swapToNext, interval);
 		}
 	}
 

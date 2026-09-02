@@ -36,5 +36,8 @@
   },
   "optionalDependencies": {
     "@astrojs/node": "^11.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.1"
   }
 }

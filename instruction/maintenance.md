@@ -278,27 +278,31 @@ ui: {
 
 ## 6. 背景图设置
 
-### 配置文件
+### 图片存放位置
+
+背景图放在 `public/backgrounds/` 目录，网站构建时会**自动扫描该目录**，把里面的图片全部作为轮播背景，**无需手动维护索引**。
+
+- 支持的格式：`.png` `.jpg` `.jpeg` `.webp` `.gif` `.avif` `.bmp` `.svg`
+- 按文件名自然排序轮播（`bg2` 会排在 `bg10` 之前）
+- 新增图片：直接把文件放进 `public/backgrounds/`，重启 `npm run dev` / 重新 `npm run build` 即可生效
+- 目录为空时只显示纯色背景
+
+### 轮播参数
 
 在 `src/config/site.ts` 的 `shared.background` 中：
 
 ```typescript
 background: {
-    images: [
-        "/backgrounds/bg1.png",   // 第一张
-        "/backgrounds/bg2.png",   // 第二张
-        "/backgrounds/bg3.png",   // 第三张（可以更多）
-    ],
-    interval: 15000,     // 每张图停留时间（毫秒），15000 = 15秒
+    images: listBackgroundImages(),  // 自动读取，不要手动修改
+    interval: 8000,      // 每张图停留时间（毫秒），8000 = 8秒
     blur: "0px",         // 模糊程度
-    opacity: 0.6,        // 图片不透明度 0~1
+    opacity: 0.9,        // 图片不透明度 0~1
     scale: 1,            // 缩放比例
     overlay: "...",      // 叠加渐变，保持暗色确保文字可读
 },
 ```
 
-- 图片放在 `public/backgrounds/` 目录
-- `images` 为空数组 `[]` 则只显示纯色背景
+- 切换采用双图层交叉淡入淡出，任意时刻都有背景，不会出现空白
 - `opacity` 建议 0.5~0.7 之间比较合适
 - `overlay` 负责暗色渐变层，保证文字清晰
 

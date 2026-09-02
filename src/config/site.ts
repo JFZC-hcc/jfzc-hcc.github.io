@@ -1,3 +1,6 @@
+import { readdirSync } from "node:fs";
+import { extname, join } from "node:path";
+
 export const defaultLocale = "zh";
 
 export const locales = {
@@ -9,13 +12,42 @@ export const locales = {
 
 export type Locale = 'zh';
 
+/** 自动识别 `public/backgrounds/` 目录下的背景图片,无需手动维护索引 */
+const BACKGROUND_IMAGE_EXTENSIONS = new Set([
+	".png",
+	".jpg",
+	".jpeg",
+	".webp",
+	".gif",
+	".avif",
+	".bmp",
+	".svg",
+]);
+
+function listBackgroundImages(): string[] {
+	try {
+		// dev / build 均在项目根目录运行,直接扫描 public/backgrounds/
+		const dir = join(process.cwd(), "public", "backgrounds");
+		return readdirSync(dir)
+			// 按扩展名过滤,顺带排除 *.png:Zone.Identifier 这类残留文件
+			.filter((file) => BACKGROUND_IMAGE_EXTENSIONS.has(extname(file).toLowerCase()))
+			// 自然排序,保证 bg2 排在 bg10 之前
+			.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }))
+			.map((file) => `/backgrounds/${file}`);
+	} catch {
+		// 目录不存在或不可读时回退为空(显示纯色背景)
+		return [];
+	}
+}
+
 const shared = {
 	name: "JFZC的个人小站",
 	email: "jfzc.h.c.c@gmail.com",
 	emailIcon: "@",
 	avatar: "/site/avatar.png",
 	background: {
-		images: ["/backgrounds/bg1.png", "/backgrounds/bg2.png", "/backgrounds/bg3.png", "/backgrounds/bg4.png", "/backgrounds/bg5.png","/backgrounds/bg6.png", "/backgrounds/bg7.png", "/backgrounds/bg8.png", "/backgrounds/bg9.png", "/backgrounds/bg10.png"],
+		// 自动读取 public/backgrounds/ 内的全部图片,保持与文件夹一致
+		images: listBackgroundImages(),
 		interval: 8000,
 		blur: "0px",
 		opacity: 0.9,
@@ -59,7 +91,7 @@ const siteConfigs = {
 		today: {
 			title: "目前的个人工作进度",
 			activity: "正在尝试从0开始学习dsh的插件开发",
-			timeLabel: "我的当前时间",
+			timeLabel: "当前时间",
 			timeZone: "Asia/Shanghai",
 			dateLocale: "zh-CN",
 			greetings: ["凌晨好", "早上好", "上午好", "中午好", "下午好", "晚上好"],
