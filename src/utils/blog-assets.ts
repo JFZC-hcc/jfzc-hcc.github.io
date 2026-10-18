@@ -1,7 +1,8 @@
 import { readdirSync } from 'node:fs';
 import { extname, join, relative, resolve } from 'node:path';
 
-const blogDir = resolve('src/content/blog');
+// 文章配图按约定放在 public/blog/<文章名>/ 下(由 scripts/blog-folders.mjs 自动创建)
+const blogImageDir = resolve('public', 'blog');
 const imageExtensions = new Set(['.avif', '.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp']);
 
 function getImageFiles(dir: string): string[] {
@@ -20,7 +21,7 @@ function encodePath(path: string): string {
 }
 
 export function getBlogImageAssets() {
-	const files = getImageFiles(blogDir);
+	const files = getImageFiles(blogImageDir);
 	const counts = new Map<string, number>();
 
 	files.forEach((file) => {
@@ -33,7 +34,7 @@ export function getBlogImageAssets() {
 		const name = file.split(/[\\/]/).at(-1);
 		if (!name || counts.get(name.toLowerCase()) !== 1) return [];
 
-		const path = relative(blogDir, file).replace(/\\/g, '/');
+		const path = relative(blogImageDir, file).replace(/\\/g, '/');
 
 		return [
 			{

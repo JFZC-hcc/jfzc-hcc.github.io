@@ -1,7 +1,8 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { extname, isAbsolute, join, relative, resolve } from 'node:path';
 
-const blogDir = resolve('src/content/blog');
+// 与文章配图约定保持一致:图片放在 public/blog/<文章名>/ 下
+const blogImageDir = resolve('public', 'blog');
 export const prerender = true;
 
 const contentTypes: Record<string, string> = {
@@ -24,17 +25,17 @@ function getAssetFiles(dir: string): string[] {
 }
 
 export function getStaticPaths() {
-	return getAssetFiles(blogDir).map((file) => ({
+	return getAssetFiles(blogImageDir).map((file) => ({
 		params: {
-			path: relative(blogDir, file).replace(/\\/g, '/'),
+			path: relative(blogImageDir, file).replace(/\\/g, '/'),
 		},
 	}));
 }
 
 export async function GET({ params }: { params: { path: string } }) {
 	const requestedPath = params.path.replace(/\\/g, '/');
-	const file = resolve(blogDir, requestedPath);
-	const relativePath = relative(blogDir, file);
+	const file = resolve(blogImageDir, requestedPath);
+	const relativePath = relative(blogImageDir, file);
 
 	if (relativePath.startsWith('..') || relativePath === '' || isAbsolute(relativePath) || !existsSync(file)) {
 		return new Response('Not found', { status: 404 });

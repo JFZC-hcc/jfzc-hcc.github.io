@@ -2,7 +2,9 @@ import { readdirSync } from 'node:fs';
 import { extname, join, relative, resolve } from 'node:path';
 
 const wikiLinkPattern = /(!?)\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
-const blogDir = resolve('src/content/blog');
+// 文章(markdown)与文章配图分属两个目录,路径需分开解析
+const contentDir = resolve('src/content/blog');
+const assetDir = resolve('public', 'blog');
 const imageExtensions = new Set(['.avif', '.gif', '.jpeg', '.jpg', '.png', '.svg', '.webp']);
 const assetExtensions = new Set([...imageExtensions, '.pdf']);
 
@@ -45,12 +47,12 @@ function readAssetFiles(dir) {
 }
 
 function getMarkdownIdFromFile(file) {
-	const relativePath = relative(blogDir, file).replace(/\\/g, '/').replace(/\.md$/, '');
+	const relativePath = relative(contentDir, file).replace(/\\/g, '/').replace(/\.md$/, '');
 	return slugifyContentPath(relativePath);
 }
 
 function getAssetRawPathFromFile(file) {
-	return relative(blogDir, file).replace(/\\/g, '/');
+	return relative(assetDir, file).replace(/\\/g, '/');
 }
 
 function createUniqueBasenameMap(values) {
@@ -73,7 +75,7 @@ function createUniqueBasenameMap(values) {
 }
 
 function createWikiResolver() {
-	const ids = readMarkdownFiles(blogDir).map(getMarkdownIdFromFile);
+	const ids = readMarkdownFiles(contentDir).map(getMarkdownIdFromFile);
 	const exactMap = new Map(ids.map((id) => [id.toLowerCase(), id]));
 	const basenameMap = createUniqueBasenameMap(ids);
 
@@ -94,7 +96,7 @@ function createWikiResolver() {
 }
 
 function createAssetResolver() {
-	const assets = readAssetFiles(blogDir).map(getAssetRawPathFromFile);
+	const assets = readAssetFiles(assetDir).map(getAssetRawPathFromFile);
 	const exactMap = new Map(assets.map((asset) => [asset.toLowerCase(), asset]));
 	const basenameMap = createUniqueBasenameMap(assets);
 
