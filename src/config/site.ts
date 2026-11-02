@@ -90,7 +90,7 @@ const siteConfigs = {
 		],
 		today: {
 			title: "目前的个人工作进度",
-			activity: "正在尝试从0开始学习dsh的插件开发",
+			activity: "开始研究学习Typescript和rust",
 			timeLabel: "当前时间",
 			timeZone: "Asia/Shanghai",
 			dateLocale: "zh-CN",
@@ -114,7 +114,7 @@ const siteConfigs = {
 		pages: {
 			home: {
 				title: "首页",
-				description: "一个黑色系 Astro 个人网站模板。",
+				description: "一个首页",
 				modules: [
 					{ type: "homeHero" },
 					{
