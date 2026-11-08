@@ -1,0 +1,62 @@
+---
+import {
+	CHANGELOG_TYPE_LABELS,
+	formatChangelogDate,
+	getChangelogEntries,
+	type ChangelogType,
+} from '../utils/changelog';
+
+const limit = 5;
+/** 首页只留新内容与人工公告；文章/项目更新只在 /changelog 里作为后继项展示。 */
+const homeTypes = new Set<ChangelogType>(['article-new', 'project-new', 'feature', 'site']);
+const entries = (await getChangelogEntries())
+	.filter((entry) => homeTypes.has(entry.type))
+	.slice(0, limit);
+---
+
+<div
+	class="mx-auto mt-8 max-w-md rounded-lg border border-white/10 bg-white/[0.04] p-6 shadow-2xl shadow-black/30 md:mx-0 md:p-8"
+>
+	<div class="flex items-baseline justify-between gap-4">
+		<h2 class="text-xl font-semibold text-white">
+			<a href="/changelog" class="transition hover:text-zinc-200">最近更新</a>
+		</h2>
+		<span class="text-xs uppercase tracking-[0.2em] text-zinc-600">Changelog</span>
+	</div>
+
+	{
+		entries.length === 0 ? (
+			<p class="mt-4 text-sm text-zinc-500">还没有公告，网站的变化会记录在这里。</p>
+		) : (
+			<ul class="mt-4 space-y-1">
+				{entries.map((entry) => {
+					const { iso, label } = formatChangelogDate(entry.date);
+					return (
+						<li>
+							<a
+								href={entry.href ?? '/changelog'}
+								class="group -mx-2 block rounded-md px-2 py-2 transition hover:bg-white/[0.05]"
+							>
+								<div class="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500">
+									<time datetime={iso}>{label}</time>
+									<span class="text-zinc-700">·</span>
+									<span>{CHANGELOG_TYPE_LABELS[entry.type]}</span>
+								</div>
+								<p class="mt-1 truncate text-sm text-zinc-200 transition group-hover:text-white" title={entry.title}>
+									{entry.title}
+								</p>
+							</a>
+						</li>
+					);
+				})}
+			</ul>
+		)
+	}
+
+	<a
+		href="/changelog"
+		class="mt-5 inline-flex items-center gap-2 text-sm text-zinc-400 transition hover:text-white"
+	>
+		查看全部更新 <span aria-hidden="true">→</span>
+	</a>
+</div>

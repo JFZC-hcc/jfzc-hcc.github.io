@@ -226,6 +226,16 @@ body {
 	text-underline-offset: 0.25em;
 }
 
+/* 项目页操作按钮放在 .prose-content 内，显式收回正文链接的颜色与下划线 */
+.prose-content a.project-action {
+	color: #fff;
+	text-decoration: none;
+}
+
+.prose-content a.project-action-primary {
+	color: #000;
+}
+
 .prose-content .note-nav {
 	margin: 1rem 0 1.5rem;
 	border: 1px solid rgba(255, 255, 255, 0.1);

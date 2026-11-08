@@ -6,6 +6,7 @@
     "node": ">=22.12.0"
   },
   "scripts": {
+    "predev": "node ./scripts/changelog-dev-check.mjs",
     "dev": "astro dev",
     "dev:host": "node ./scripts/dev-server.mjs",
     "dev:dynamic": "node ./scripts/dev-server.mjs --dynamic",
@@ -16,6 +17,8 @@
     "setup": "node ./scripts/setup.mjs",
     "blog:folders": "node ./scripts/blog-folders.mjs",
     "blog:folders:watch": "node ./scripts/blog-folders.mjs --watch",
+    "changelog:sync": "node ./scripts/changelog-sync.mjs",
+    "changelog:check": "node ./scripts/changelog-check.mjs",
     "pm2:start": "npm run build:dynamic && pm2 start ecosystem.config.cjs",
     "pm2:restart": "npm run build:dynamic && pm2 restart atlas-dynamic",
     "pm2:logs": "pm2 logs atlas-dynamic",
@@ -38,6 +41,8 @@
     "@astrojs/node": "^11.0.2"
   },
   "devDependencies": {
-    "@types/node": "^22.20.1"
+    "@types/node": "^22.20.1",
+    "github-slugger": "^2.0.0",
+    "js-yaml": "^4.3.2"
   }
 }

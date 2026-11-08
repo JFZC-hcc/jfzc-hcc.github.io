@@ -2,9 +2,12 @@
 title: "DeepSeek Harness 会话分支树插件"
 description: "给 dsh 的 Web 界面加一棵会话血缘树，并能改写某一轮的提问重跑出新分支"
 date: 2026-11-02
+updatedDate: 2026-11-08
 tags: ["Cordis", "TypeScript", "React", "DeepSeek Harness", "npm"]
 role: "全栈学习者+ai学习+vibecoding"
 url: "https://www.npmjs.com/package/@jfzcroozmic/dsh-conversation-tree-view"
+urlLabel: "npm"
+featured: true
 ---
 
 ## 项目简介

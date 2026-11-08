@@ -1,0 +1,60 @@
+---
+import ChangelogRow from './ChangelogRow.astro';
+import { formatChangelogDate, type ChangelogItem } from '../utils/changelog';
+
+interface Props {
+	entries: readonly ChangelogItem[];
+}
+
+const { entries } = Astro.props;
+
+const isUpdateType = (type: ChangelogItem['type']) =>
+	type === 'article-update' || type === 'project-update';
+
+interface DayGroup {
+	iso: string;
+	label: string;
+	primary: ChangelogItem[];
+	updates: ChangelogItem[];
+}
+
+/** 同一天的公告合成一组：人工/新内容在前，文章/项目更新作为后继项排在后面。 */
+const days: DayGroup[] = [];
+for (const entry of entries) {
+	const { iso, label } = formatChangelogDate(entry.date);
+	let day = days.at(-1);
+	if (!day || day.iso !== iso) {
+		day = { iso, label, primary: [], updates: [] };
+		days.push(day);
+	}
+	if (isUpdateType(entry.type)) day.updates.push(entry);
+	else day.primary.push(entry);
+}
+---
+
+<div class="border-t border-white/10">
+	{
+		days.map((day) => (
+			<section class="grid gap-3 border-b border-white/10 py-6 md:grid-cols-[140px_1fr] md:gap-6">
+				<time datetime={day.iso} class="text-sm text-zinc-500">{day.label}</time>
+				<div class="space-y-5">
+					{day.primary.map((entry) => <ChangelogRow entry={entry} />)}
+					{day.updates.length > 0 && (
+						<ul
+							class:list={[
+								'space-y-4',
+								day.primary.length > 0 ? 'border-l border-white/10 pl-4' : '',
+							]}
+						>
+							{day.updates.map((entry) => (
+								<li>
+									<ChangelogRow entry={entry} variant="update" />
+								</li>
+							))}
+						</ul>
+					)}
+				</div>
+			</section>
+		))
+	}
+</div>

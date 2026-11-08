@@ -82,12 +82,6 @@ const siteConfigs = {
 			{ label: "博客", href: "/blog" },
 			{ label: "联系", href: "/contact" },
 		],
-		quickLinks: [
-			{ label: "博客", href: "/blog", icon: "文" },
-			{ label: "项目", href: "/projects", icon: "作" },
-			{ label: "关于", href: "/about", icon: "我" },
-			{ label: "联系", href: "/contact", icon: "@" },
-		],
 		today: {
 			title: "目前的个人工作进度",
 			activity: "开始研究学习Typescript和rust",
@@ -244,6 +238,21 @@ const siteConfigs = {
 								all: "全部",
 								empty: "没有找到符合条件的笔记。",
 							},
+						},
+					},
+				],
+			},
+			changelog: {
+				title: "网站更新日志",
+				description: "从公告板上线开始，记录网站的每一次新文章、文章修改和功能调整。",
+				modules: [
+					{
+						type: "changelog",
+						props: {
+							kicker: "Changelog",
+							title: "网站更新日志",
+							description: "从公告板上线开始，记录网站的每一次新文章、文章修改和功能调整",
+							groupByYear: true,
 						},
 					},
 				],

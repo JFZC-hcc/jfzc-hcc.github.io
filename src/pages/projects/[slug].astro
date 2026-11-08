@@ -27,17 +27,18 @@ const heroTransitionName = `project-title-${cleanSlug.replace(/[^a-zA-Z0-9_-]/g,
 	title={project.data.title}
 	description={project.data.description}
 	date={project.data.date}
+	updatedDate={project.data.updatedDate}
 	tags={project.data.tags}
 	heroTransitionName={heroTransitionName}
 >
 	<div class="mb-8 flex flex-wrap gap-3">
 		{project.data.url && (
-			<a href={project.data.url} target="_blank" class="rounded-full bg-white px-4 py-2 text-sm font-medium text-black">
-				{siteConfig.ui.projectLiveCta}
+			<a href={project.data.url} target="_blank" class="project-action project-action-primary rounded-full bg-white px-4 py-2 text-sm font-medium transition hover:bg-zinc-200">
+				{project.data.urlLabel ?? siteConfig.ui.projectLiveCta}
 			</a>
 		)}
 		{project.data.repo && (
-			<a href={project.data.repo} target="_blank" class="rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-white">
+			<a href={project.data.repo} target="_blank" class="project-action rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-white">
 				{siteConfig.ui.projectRepoCta}
 			</a>
 		)}

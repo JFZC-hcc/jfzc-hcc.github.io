@@ -20,6 +20,8 @@ npm install        # 安装依赖
 npm run dev        # 本地开发
 npm run build      # 构建静态网站
 npm run preview    # 预览构建结果
+npm run changelog:sync   # 生成新文章/文章修改的公告
+npm run changelog:check  # 检查公告是否齐全（CI 也会跑）
 ```
 
 ## 目录结构
@@ -29,7 +31,8 @@ src/
 ├── config/site.ts       ← 网站所有配置（导航、文案、模块等）
 ├── content/
 │   ├── blog/            ← 博客文章 (.md)
-│   └── projects/        ← 项目文章 (.md)
+│   ├── projects/        ← 项目文章 (.md)
+│   └── changelog/       ← 网站更新公告 (.yml)
 ├── components/          ← 通用组件
 ├── modules/             ← 页面模块组件
 ├── layouts/             ← 布局模板
