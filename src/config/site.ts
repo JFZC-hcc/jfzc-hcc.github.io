@@ -80,6 +80,7 @@ const siteConfigs = {
 			{ label: "关于我", href: "/about" },
 			{ label: "项目", href: "/projects" },
 			{ label: "博客", href: "/blog" },
+			{ label: "更新", href: "/changelog" },
 			{ label: "联系", href: "/contact" },
 		],
 		quickLinks: [
@@ -145,6 +146,16 @@ const siteConfigs = {
 							title: "最新博客",
 							description: "JFZC的碎碎念博客",
 							limit: 3,
+						},
+					},
+					{
+						type: "changelog",
+						props: {
+							kicker: "Changelog",
+							title: "最近更新",
+							description: "网站最近发生的变化",
+							limit: 5,
+							showArchiveLink: true,
 						},
 					},
 					{
@@ -244,6 +255,21 @@ const siteConfigs = {
 								all: "全部",
 								empty: "没有找到符合条件的笔记。",
 							},
+						},
+					},
+				],
+			},
+			changelog: {
+				title: "网站更新日志",
+				description: "从公告板上线开始，记录网站的每一次新文章、文章修改和功能调整。",
+				modules: [
+					{
+						type: "changelog",
+						props: {
+							kicker: "Changelog",
+							title: "网站更新日志",
+							description: "从公告板上线开始，记录网站的每一次新文章、文章修改和功能调整",
+							groupByYear: true,
 						},
 					},
 				],

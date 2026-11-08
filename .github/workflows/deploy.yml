@@ -24,6 +24,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check changelog
+        run: |
+          if ! npm run changelog:check; then
+            echo "::error::请确认公告！有新文章或文章修改还没有生成/确认公告，请运行 npm run changelog:sync 并填写内容。"
+            exit 1
+          fi
+
       - name: Build site
         run: npx astro build
 

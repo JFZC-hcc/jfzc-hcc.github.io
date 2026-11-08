@@ -2,6 +2,7 @@
 import { getLocaleFromUrl, localizePath } from "../config/site";
 import { cleanContentSlug } from "../config/i18n";
 import { getEntryDescription, getEntryTitle } from "../utils/content";
+import { blogHref } from "../utils/content-paths";
 import { formatReadingStats, getReadingStats } from "../utils/reading-stats";
 
 interface Props {
@@ -34,7 +35,7 @@ const readingStats = formatReadingStats(getReadingStats(post.body), locale);
 ---
 
 <a
-	href={localizePath(locale, `/blog/${cleanSlug}`)}
+	href={localizePath(locale, blogHref(post.id))}
 	class="group grid gap-4 border-t border-white/10 py-6 transition hover:border-white/30 md:grid-cols-[160px_1fr]"
 >
 	<div class="space-y-3">

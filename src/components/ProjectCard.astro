@@ -1,6 +1,7 @@
 ---
 import { getLocaleFromUrl, getSiteConfig, localizePath } from '../config/site';
 import { cleanContentSlug } from '../config/i18n';
+import { projectHref } from '../utils/content-paths';
 
 const locale = getLocaleFromUrl(Astro.url);
 const siteConfig = getSiteConfig(locale);
@@ -25,7 +26,7 @@ const transitionName = `project-title-${cleanSlug.replace(/[^a-zA-Z0-9_-]/g, '-'
 ---
 
 <a
-	href={localizePath(locale, `/projects/${cleanSlug}`)}
+	href={localizePath(locale, projectHref(project.id))}
 	class="group block rounded-lg border border-white/10 bg-white/[0.03] p-6 transition hover:-translate-y-1 hover:border-white/30 hover:bg-white/[0.06]"
 >
 	<div class="flex items-center justify-between gap-4">

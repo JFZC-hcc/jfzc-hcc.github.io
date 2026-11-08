@@ -15,6 +15,7 @@
 7. [首页模块调整](#7-首页模块调整)
 8. [图片资源管理](#8-图片资源管理)
 9. [构建与部署](#9-构建与部署)
+10. [网站更新公告](#10-网站更新公告)
 
 ---
 
@@ -60,7 +61,7 @@ title: "文章标题"
 description: "一句话摘要，会显示在博客列表页"
 pubDate: 2026-07-25
 tags: ["galgame", "日常"]
-updatedDate: 2026-07-26    ← 可选，最后更新日期
+updatedDate: 2026-07-26    ← 可选，最后更新日期；填了就会要求一条更新公告
 cover: "/blog/cover.png"    ← 可选，封面图
 draft: false                ← 可选，true=草稿，不显示在列表
 ---
@@ -76,7 +77,7 @@ draft: false                ← 可选，true=草稿，不显示在列表
 | `description` | ✅ | 列表页显示的摘要 |
 | `pubDate` | ✅ | 发布日期，格式 `YYYY-MM-DD` |
 | `tags` | ❌ | 标签数组，如 `["Astro", "前端"]` |
-| `updatedDate` | ❌ | 最后更新日期 |
+| `updatedDate` | ❌ | 最后更新日期；会触发一条 `article-update` 公告（见第 10 节） |
 | `cover` | ❌ | 封面图路径，建议放 `public/blog/<文章名>/` 下 |
 | `draft` | ❌ | 设为 `true` 则文章仅在构建时可见，列表页不显示 |
 
@@ -189,6 +190,7 @@ nav: [
     { label: "关于我", href: "/about" },
     { label: "项目", href: "/projects" },
     { label: "博客", href: "/blog" },
+    { label: "更新", href: "/changelog" },
     { label: "联系", href: "/contact" },
 ],
 ```
@@ -345,6 +347,7 @@ modules: [
 | `linkGrid` | 快捷链接网格 | `items: [{label, href}]` |
 | `projectGrid` | 项目卡片网格 | `featuredOnly`, `limit`, `columns` |
 | `blogPreview` | 最新博客预览 | `limit` |
+| `changelog` | 网站更新公告 | `limit`, `groupByYear`, `showArchiveLink` |
 | `aboutIntro` | 关于页介绍 | `heading`, `intro`, `paragraphs` |
 | `gameList` | 爱好卡片（支持 Markdown） | `title`, `items: [{label, description, content}]` |
 | `skillCloud` | 技能标签云 | `title`, `skills: string[]` |
@@ -416,4 +419,84 @@ npm run build
 
 ---
 
-> 最后更新：2026-08-26
+## 10. 网站更新公告
+
+公告板记录网站从 2026-11-08 上线以来的变化，数据在：
+
+```
+src/content/changelog/<日期>-<类型>-<名字>.yml
+```
+
+文件名就是公告 id。自动公告用 `ref: blog/<文章名>` 指向文章，链接在构建时解析，**不要在 YAML 里手写 `/blog/...`**；只有人工公告才用 `link` 直接写路径。
+
+### 发布新文章
+
+```bash
+npm run changelog:sync     # 生成缺失的公告
+npm run changelog:check    # 检查（CI 也会跑）
+```
+
+1. 正常写文章，`pubDate` 填发布日期。
+2. 运行 `npm run changelog:sync`，会生成一条 `article-new` 公告，标题和描述取自文章 frontmatter。
+3. 想改措辞就直接编辑生成的 YAML。
+4. `changelog:check` 通过后，把文章和公告一起提交。
+
+### 修改旧文章
+
+1. 改文章内容时，把 frontmatter 的 `updatedDate` 改成当天日期（例如 `2026-11-10`）。
+2. `npm run changelog:sync`，会生成一条 `article-update` **草稿**：`draft: true`，描述是占位文字。
+3. 把 `description` 改成“这次改了什么”，删掉 `draft: true` 这一行。
+4. `npm run changelog:check` 通过后提交。
+
+> 注意：只改正文、不填 `updatedDate` 的话不会产生公告。公告要写给访客看，改了什么都由你决定。
+
+### 手动公告
+
+功能、样式调整、新项目等直接新建 YAML：
+
+```yaml
+type: feature          # feature / site / project-new
+source: manual
+title: 新增站内搜索
+description: 现在可以在博客页按标题、摘要和标签搜索。
+date: 2026-11-10
+link: /blog            # 可选，站内以 / 开头，站外写完整 URL
+```
+
+### 字段说明
+
+| 字段 | 必填 | 说明 |
+|------|------|------|
+| `type` | ✅ | `article-new` / `article-update` / `project-new` / `feature` / `site` |
+| `source` | ❌ | `automatic`（脚本生成）或 `manual`，默认 `manual` |
+| `title` | ✅ | 公告标题 |
+| `description` | ✅（建议） | 一句话说明；`article-update` 必须有实际内容 |
+| `date` | ✅ | `YYYY-MM-DD`，新文章取 `pubDate`，文章更新取 `updatedDate` |
+| `ref` | ❌ | 指向内容条目，如 `blog/文章名`、`projects/项目名` |
+| `link` | ❌ | 直接指定链接（与 `ref` 二选一） |
+| `draft` | ❌ | 草稿不会显示，且会让 `changelog:check` 失败 |
+
+### 展示位置
+
+- 首页「最近更新」：最近 5 条。
+- `/changelog`：全部公告，按年份分组。
+- 顶部导航「更新」进入历史页。
+
+### 阻塞规则
+
+GitHub Actions 在构建前运行 `npm run changelog:check`，不通过会显示 **请确认公告！** 并让部署失败。常见原因：
+
+- 新文章已发布但还没生成公告 → 运行 `npm run changelog:sync`
+- 文章更新公告还是草稿，或描述没写 → 补内容、删 `draft`
+- `ref` 指向不存在的文章（文章被改名/删除）→ 修正 ref 或删掉公告
+- 同一天同一篇文章出现两条公告 → 合并成一条
+
+### 边界说明
+
+- **不补档**：`scripts/changelog.config.mjs` 里的 `startDate = 2026-11-08`，之前的文章和修改不会生成公告。
+- 自动公告被手动删除后，下次同步会重新生成；永久不想公告某篇，把文章 id 写进同一文件的 `noAnnounce` 数组。
+- 自动公告只读取 frontmatter 的标题/描述，不会因为正文改动而自动改公告内容。
+
+---
+
+> 最后更新：2026-11-08

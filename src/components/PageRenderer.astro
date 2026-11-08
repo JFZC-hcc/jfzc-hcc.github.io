@@ -3,6 +3,7 @@ import AboutGameList from "./AboutGameList.astro";
 import AboutIntroModule from "../modules/AboutIntroModule.astro";
 import BlogIndexModule from "../modules/BlogIndexModule.astro";
 import BlogPreviewModule from "../modules/BlogPreviewModule.astro";
+import ChangelogModule from "../modules/ChangelogModule.astro";
 import ContactCardsModule from "../modules/ContactCardsModule.astro";
 import FriendLinksModule from "../modules/FriendLinksModule.astro";
 import HomeHeroModule from "../modules/HomeHeroModule.astro";
@@ -52,7 +53,14 @@ const { locale, modules } = Astro.props;
 				return <FriendLinksModule {...module.props} />;
 			case "richText":
 				return <RichTextModule {...module.props} />;
+			case "changelog":
+				return <ChangelogModule {...module.props} />;
 			default:
+				// 新增模块类型时要同时改三处：types.ts、这里、site.ts 的 modules 数组。
+				// 这里在开发环境留下一条警告，避免拼错类型名后页面静默空白。
+				if (import.meta.env.DEV) {
+					console.warn(`[PageRenderer] 未注册的模块类型: ${(module as { type: string }).type}`);
+				}
 				return null;
 		}
 	})

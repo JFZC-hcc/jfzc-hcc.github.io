@@ -133,6 +133,18 @@ export type FriendLinksModule = {
 	};
 };
 
+export type ChangelogModule = {
+	type: 'changelog';
+	props: {
+		kicker?: string;
+		title: string;
+		description?: string;
+		limit?: number;
+		groupByYear?: boolean;
+		showArchiveLink?: boolean;
+	};
+};
+
 export type PageModule =
 	| AboutIntroModule
 	| GameListModule
@@ -146,4 +158,5 @@ export type PageModule =
 	| BlogIndexModule
 	| ContactCardsModule
 	| FriendLinksModule
-	| RichTextModule;
+	| RichTextModule
+	| ChangelogModule;

@@ -1,0 +1,57 @@
+---
+import SectionHeading from '../components/SectionHeading.astro';
+import ChangelogList from '../components/ChangelogList.astro';
+import { getChangelogEntries, groupEntriesByYear } from '../utils/changelog';
+
+interface Props {
+	kicker?: string;
+	title: string;
+	description?: string;
+	limit?: number;
+	groupByYear?: boolean;
+	showArchiveLink?: boolean;
+}
+
+const {
+	kicker,
+	title,
+	description,
+	limit,
+	groupByYear = false,
+	showArchiveLink = false,
+} = Astro.props;
+
+const entries = await getChangelogEntries();
+const shown = typeof limit === 'number' ? entries.slice(0, limit) : entries;
+const groups = groupByYear ? groupEntriesByYear(shown) : null;
+---
+
+<section class="mx-auto max-w-6xl px-5 py-16">
+	<SectionHeading kicker={kicker} title={title} description={description} />
+
+	{shown.length === 0 ? (
+		<p class="rounded-lg border border-white/10 bg-white/[0.03] px-5 py-8 text-sm text-zinc-400">
+			还没有公告。以后网站的新文章和改动都会记录在这里。
+		</p>
+	) : groups ? (
+		<div class="space-y-12">
+			{groups.map(([year, items]) => (
+				<div>
+					<h3 class="mb-4 text-sm font-medium uppercase tracking-[0.24em] text-zinc-500">{year}</h3>
+					<ChangelogList entries={items} />
+				</div>
+			))}
+		</div>
+	) : (
+		<ChangelogList entries={shown} />
+	)}
+
+	{showArchiveLink && entries.length > 0 && (
+		<a
+			href="/changelog"
+			class="mt-8 inline-flex items-center gap-2 text-sm text-zinc-400 transition hover:text-white"
+		>
+			查看全部更新 <span aria-hidden="true">→</span>
+		</a>
+	)}
+</section>

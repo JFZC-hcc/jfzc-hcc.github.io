@@ -29,4 +29,23 @@ const projects = defineCollection({
 	}),
 });
 
-export const collections = { blog, projects };
+/**
+ * 网站更新公告。
+ * 每条公告一个 YAML 文件，文件名即条目 id；`ref` 指向内容集合条目，
+ * 由 `src/utils/changelog.ts` 在构建时解析成真实链接。
+ */
+const changelog = defineCollection({
+	loader: glob({ pattern: '**/*.yml', base: './src/content/changelog' }),
+	schema: z.object({
+		type: z.enum(['article-new', 'article-update', 'project-new', 'feature', 'site']),
+		source: z.enum(['automatic', 'manual']).default('manual'),
+		title: z.string().min(1),
+		description: z.string().default(''),
+		date: z.coerce.date(),
+		ref: z.string().optional(),
+		link: z.string().optional(),
+		draft: z.boolean().default(false),
+	}),
+});
+
+export const collections = { blog, projects, changelog };

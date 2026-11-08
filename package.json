@@ -16,6 +16,8 @@
     "setup": "node ./scripts/setup.mjs",
     "blog:folders": "node ./scripts/blog-folders.mjs",
     "blog:folders:watch": "node ./scripts/blog-folders.mjs --watch",
+    "changelog:sync": "node ./scripts/changelog-sync.mjs",
+    "changelog:check": "node ./scripts/changelog-check.mjs",
     "pm2:start": "npm run build:dynamic && pm2 start ecosystem.config.cjs",
     "pm2:restart": "npm run build:dynamic && pm2 restart atlas-dynamic",
     "pm2:logs": "pm2 logs atlas-dynamic",
@@ -38,6 +40,7 @@
     "@astrojs/node": "^11.0.2"
   },
   "devDependencies": {
-    "@types/node": "^22.20.1"
+    "@types/node": "^22.20.1",
+    "js-yaml": "^4.3.2"
   }
 }
