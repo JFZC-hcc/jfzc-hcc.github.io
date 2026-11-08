@@ -5,6 +5,8 @@ date: 2026-11-02
 tags: ["Cordis", "TypeScript", "React", "DeepSeek Harness", "npm"]
 role: "全栈学习者+ai学习+vibecoding"
 url: "https://www.npmjs.com/package/@jfzcroozmic/dsh-conversation-tree-view"
+urlLabel: "npm"
+featured: true
 ---
 
 ## 项目简介
