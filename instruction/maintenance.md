@@ -77,9 +77,11 @@ draft: false                ← 可选，true=草稿，不显示在列表
 | `description` | ✅ | 列表页显示的摘要 |
 | `pubDate` | ✅ | 发布日期，格式 `YYYY-MM-DD` |
 | `tags` | ❌ | 标签数组，如 `["Astro", "前端"]` |
-| `updatedDate` | ❌ | 最后更新日期；会触发一条 `article-update` 公告（见第 10 节） |
+| `updatedDate` | ❌ | 最后编辑日期；晚于 `pubDate` 时触发 `article-update` 公告，并在页面上显示「最后编辑于」（见第 10 节） |
 | `cover` | ❌ | 封面图路径，建议放 `public/blog/<文章名>/` 下 |
 | `draft` | ❌ | 设为 `true` 则文章仅在构建时可见，列表页不显示 |
+
+> `description` 支持多行：YAML 块字符串 `|` 保留换行，或直接写 `\n`；博客列表、文章页和公告都会按换行显示。
 
 ### 正文 Markdown 语法速查
 
@@ -137,6 +139,7 @@ src/content/projects/<文件名>.md
 title: "项目名称"
 description: "一句话描述项目"
 date: 2026-04-12
+updatedDate: 2026-04-20             ← 可选，最后编辑日期（晚于 date 时触发项目更新公告）
 tags: ["SaaS", "Dashboard"]
 role: "Design Engineer"
 url: "https://example.com"           ← 可选，项目线上地址
@@ -158,6 +161,7 @@ featured: true                       ← true=在首页"最近做的小项目"�
 | `title` | ✅ | 项目名称 |
 | `description` | ✅ | 一句话描述 |
 | `date` | ✅ | 日期，格式 `YYYY-MM-DD` |
+| `updatedDate` | ❌ | 最后编辑日期；晚于 `date` 时触发 `project-update` 公告并显示「最后编辑于」 |
 | `tags` | ❌ | 技术标签 |
 | `role` | ✅ | 你的角色（如 "全栈开发"） |
 | `url` | ❌ | 项目在线链接 |
@@ -428,6 +432,8 @@ src/content/changelog/<日期>-<类型>-<名字>.yml
 
 文件名就是公告 id。自动公告用 `ref: blog/<文章名>` 指向文章，链接在构建时解析，**不要在 YAML 里手写 `/blog/...`**；只有人工公告才用 `link` 直接写路径。
 
+> `npm run dev` 启动前会跑一次公告检查；开发服务器运行期间还会监听 `src/content/blog/` 与 `src/content/projects/`，保存后自动生成缺失的新文章公告或文章/项目更新草稿（草稿仍需你补说明），页面会热更新。检查失败只提示，不阻塞 dev。写文章时可以先保持 `draft: true`，定稿后再改回 `false`，避免写到一半就生成公告。
+
 ### 发布新文章
 
 ```bash
@@ -443,9 +449,12 @@ npm run changelog:check    # 检查（CI 也会跑）
 ### 修改旧文章
 
 1. 改文章内容时，把 frontmatter 的 `updatedDate` 改成当天日期（例如 `2026-11-10`）。
-2. `npm run changelog:sync`，会生成一条 `article-update` **草稿**：`draft: true`，描述是占位文字。
-3. 把 `description` 改成“这次改了什么”，删掉 `draft: true` 这一行。
-4. `npm run changelog:check` 通过后提交。
+2. `updatedDate` 必须**晚于** `pubDate`；相等或不填都不会生成公告。文章页会显示「发布于 X · 最后编辑于 Y」。
+3. `npm run changelog:sync`，会生成一条 `article-update` **草稿**：`draft: true`，描述是占位文字。
+4. 把 `description` 改成“这次改了什么”，删掉 `draft: true` 这一行。
+5. `npm run changelog:check` 通过后提交。
+
+项目的规则一样：改 `src/content/projects/*.md` 时更新 `updatedDate`，晚于 `date` 会生成 `project-update` 草稿。
 
 > 注意：只改正文、不填 `updatedDate` 的话不会产生公告。公告要写给访客看，改了什么都由你决定。
 
@@ -462,14 +471,28 @@ date: 2026-11-10
 link: /blog            # 可选，站内以 / 开头，站外写完整 URL
 ```
 
+描述想分条写时，两种写法都可以：
+
+```yaml
+# 写法一：YAML 块字符串（推荐，`|` 保留换行）
+description: |
+  1. 新增站内搜索
+  2. 修复按钮颜色
+
+# 写法二：单行里用 \n 分隔（站内会按换行显示）
+description: "1. 新增站内搜索\n2. 修复按钮颜色"
+```
+
+> 不要用大括号包描述：YAML 里 `{}` 是映射语法，`description: { 文本 }` 会被解析成对象，校验会失败。
+
 ### 字段说明
 
 | 字段 | 必填 | 说明 |
 |------|------|------|
-| `type` | ✅ | `article-new` / `article-update` / `project-new` / `feature` / `site` |
+| `type` | ✅ | `article-new` / `article-update` / `project-new` / `project-update` / `feature` / `site` |
 | `source` | ❌ | `automatic`（脚本生成）或 `manual`，默认 `manual` |
 | `title` | ✅ | 公告标题 |
-| `description` | ✅（建议） | 一句话说明；`article-update` 必须有实际内容 |
+| `description` | ✅（建议） | 一句话说明；`article-update`、`project-update` 必须有实际内容 |
 | `date` | ✅ | `YYYY-MM-DD`，新文章取 `pubDate`，文章更新取 `updatedDate` |
 | `ref` | ❌ | 指向内容条目，如 `blog/文章名`、`projects/项目名` |
 | `link` | ❌ | 直接指定链接（与 `ref` 二选一） |
@@ -477,8 +500,8 @@ link: /blog            # 可选，站内以 / 开头，站外写完整 URL
 
 ### 展示位置
 
-- 首页左侧「最近更新」卡片：最近 5 条，点击标题或「查看全部更新」进入历史页。
-- `/changelog`：全部公告，按年份分组。
+- 首页左侧「最近更新」卡片：只展示新文章、新项目和人工公告（功能/网站调整），最多 5 条；文章/项目更新只在 `/changelog` 的历史页里显示。
+- `/changelog`：全部公告，按年份分组；同一天的公告再合成一组，人工/新内容公告在前，文章/项目更新作为后继项缩进排在后面。
 
 ### 阻塞规则
 

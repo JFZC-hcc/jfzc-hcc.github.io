@@ -1,7 +1,8 @@
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import yaml from 'js-yaml';
+import { slug } from 'github-slugger';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -27,8 +28,17 @@ function walk(dir, extension, files = []) {
 	return files;
 }
 
+/**
+ * 与 Astro content layer 的 id 规则保持一致（逐段 github-slugger），
+ * 否则 `ref` 和 Astro 的条目 id 对不上，链接会解析失败。
+ */
 function toId(dir, file) {
-	return relative(dir, file).split(sep).join('/').replace(/\.md$/, '');
+	const relativePath = relative(dir, file).split(sep).join('/').replace(/\.md$/, '');
+	return relativePath
+		.split('/')
+		.map((segment) => slug(segment))
+		.join('/')
+		.replace(/\/index$/, '');
 }
 
 export function relativePath(file) {
@@ -131,5 +141,17 @@ export function serializeEntry(entry) {
 
 export function writeEntry(file, content) {
 	mkdirSync(dirname(file), { recursive: true });
-	writeFileSync(file, content, 'utf8');
+	// 先写临时文件再改名，避免 dev 监听器读到写了一半的 YAML。
+	const temp = `${file}.${process.pid}.tmp`;
+	try {
+		writeFileSync(temp, content, 'utf8');
+		renameSync(temp, file);
+	} catch (error) {
+		try {
+			unlinkSync(temp);
+		} catch {
+			// 临时文件可能尚未创建，忽略。
+		}
+		throw error;
+	}
 }

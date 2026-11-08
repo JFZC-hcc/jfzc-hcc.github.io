@@ -1,0 +1,71 @@
+---
+import { CHANGELOG_TYPE_LABELS, type ChangelogItem } from '../utils/changelog';
+
+interface Props {
+	entry: ChangelogItem;
+	/** primary = 人工/新内容公告；update = 文章/项目更新，作为前一条的后继项展示。 */
+	variant?: 'primary' | 'update';
+}
+
+const { entry, variant = 'primary' } = Astro.props;
+const typeLabel = CHANGELOG_TYPE_LABELS[entry.type];
+const isNew = entry.type === 'article-new' || entry.type === 'project-new';
+---
+
+{
+	variant === 'primary' ? (
+		<div>
+			<div class="flex flex-wrap items-baseline gap-3">
+				<span
+					class:list={[
+						'rounded-full border px-2.5 py-0.5 text-xs font-medium',
+						isNew
+							? 'border-blue-400/25 bg-blue-400/10 text-blue-200'
+							: 'border-white/10 bg-white/[0.05] text-zinc-300',
+					]}
+				>
+					{typeLabel}
+				</span>
+				{entry.href ? (
+					<a
+						href={entry.href}
+						class="group inline-flex items-baseline gap-2 text-lg font-semibold text-white transition hover:text-zinc-200"
+					>
+						<span>{entry.title}</span>
+						<span
+							class="text-sm text-zinc-500 transition group-hover:translate-x-0.5 group-hover:text-zinc-300"
+							aria-hidden="true"
+						>
+							→
+						</span>
+					</a>
+				) : (
+					<span class="text-lg font-semibold text-white">{entry.title}</span>
+				)}
+			</div>
+			{entry.description && (
+				<p class="mt-2 max-w-3xl whitespace-pre-line text-sm leading-6 text-zinc-400">
+					{entry.description}
+				</p>
+			)}
+		</div>
+	) : (
+		<div>
+			<div class="flex flex-wrap items-baseline gap-2">
+				<span class="text-xs font-medium uppercase tracking-[0.14em] text-zinc-500">{typeLabel}</span>
+				{entry.href ? (
+					<a href={entry.href} class="text-sm font-medium text-zinc-200 transition hover:text-white">
+						{entry.title} <span aria-hidden="true">→</span>
+					</a>
+				) : (
+					<span class="text-sm font-medium text-zinc-200">{entry.title}</span>
+				)}
+			</div>
+			{entry.description && (
+				<p class="mt-1 max-w-3xl whitespace-pre-line text-sm leading-6 text-zinc-500">
+					{entry.description}
+				</p>
+			)}
+		</div>
+	)
+}

@@ -29,6 +29,7 @@ const heroTransitionName = `blog-title-${cleanSlug.replace(/[^a-zA-Z0-9_-]/g, '-
 	title={getEntryTitle(post)}
 	description={getEntryDescription(post)}
 	date={post.data.pubDate}
+	updatedDate={post.data.updatedDate}
 	tags={post.data.tags}
 	cover={post.data.cover}
 	readingStats={getReadingStats(post.body)}

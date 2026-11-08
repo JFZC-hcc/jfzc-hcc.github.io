@@ -1,61 +1,60 @@
 ---
-import {
-	CHANGELOG_TYPE_LABELS,
-	formatChangelogDate,
-	type ChangelogItem,
-} from '../utils/changelog';
+import ChangelogRow from './ChangelogRow.astro';
+import { formatChangelogDate, type ChangelogItem } from '../utils/changelog';
 
 interface Props {
 	entries: readonly ChangelogItem[];
 }
 
 const { entries } = Astro.props;
+
+const isUpdateType = (type: ChangelogItem['type']) =>
+	type === 'article-update' || type === 'project-update';
+
+interface DayGroup {
+	iso: string;
+	label: string;
+	primary: ChangelogItem[];
+	updates: ChangelogItem[];
+}
+
+/** 同一天的公告合成一组：人工/新内容在前，文章/项目更新作为后继项排在后面。 */
+const days: DayGroup[] = [];
+for (const entry of entries) {
+	const { iso, label } = formatChangelogDate(entry.date);
+	let day = days.at(-1);
+	if (!day || day.iso !== iso) {
+		day = { iso, label, primary: [], updates: [] };
+		days.push(day);
+	}
+	if (isUpdateType(entry.type)) day.updates.push(entry);
+	else day.primary.push(entry);
+}
 ---
 
-<ol class="border-t border-white/10">
+<div class="border-t border-white/10">
 	{
-		entries.map((entry) => {
-			const { iso, label } = formatChangelogDate(entry.date);
-			const typeLabel = CHANGELOG_TYPE_LABELS[entry.type];
-			const isArticle = entry.type === 'article-new' || entry.type === 'article-update';
-			return (
-				<li class="grid gap-3 border-b border-white/10 py-6 md:grid-cols-[140px_1fr] md:gap-6">
-					<div class="flex flex-wrap items-center gap-2 md:flex-col md:items-start">
-						<time datetime={iso} class="text-sm text-zinc-500">{label}</time>
-						<span
+		days.map((day) => (
+			<section class="grid gap-3 border-b border-white/10 py-6 md:grid-cols-[140px_1fr] md:gap-6">
+				<time datetime={day.iso} class="text-sm text-zinc-500">{day.label}</time>
+				<div class="space-y-5">
+					{day.primary.map((entry) => <ChangelogRow entry={entry} />)}
+					{day.updates.length > 0 && (
+						<ul
 							class:list={[
-								'rounded-full border px-2.5 py-0.5 text-xs font-medium',
-								isArticle
-									? 'border-blue-400/25 bg-blue-400/10 text-blue-200'
-									: 'border-white/10 bg-white/[0.05] text-zinc-300',
+								'space-y-4',
+								day.primary.length > 0 ? 'border-l border-white/10 pl-4' : '',
 							]}
 						>
-							{typeLabel}
-						</span>
-					</div>
-					<div>
-						{entry.href ? (
-							<a
-								href={entry.href}
-								class="group inline-flex items-baseline gap-2 text-lg font-semibold text-white transition hover:text-zinc-200"
-							>
-								<span>{entry.title}</span>
-								<span
-									class="text-sm text-zinc-500 transition group-hover:translate-x-0.5 group-hover:text-zinc-300"
-									aria-hidden="true"
-								>
-									→
-								</span>
-							</a>
-						) : (
-							<p class="text-lg font-semibold text-white">{entry.title}</p>
-						)}
-						{entry.description && (
-							<p class="mt-2 max-w-3xl text-sm leading-6 text-zinc-400">{entry.description}</p>
-						)}
-					</div>
-				</li>
-			);
-		})
+							{day.updates.map((entry) => (
+								<li>
+									<ChangelogRow entry={entry} variant="update" />
+								</li>
+							))}
+						</ul>
+					)}
+				</div>
+			</section>
+		))
 	}
-</ol>
+</div>

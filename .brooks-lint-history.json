@@ -1,0 +1,13 @@
+[
+  {
+    "date": "2026-11-08T20:32:59+08:00",
+    "mode": "Architecture Audit",
+    "score": 57,
+    "findings": {
+      "critical": 1,
+      "warning": 5,
+      "suggestion": 3
+    },
+    "scope": "entire project (src/ 48 files 4244 lines + scripts/), excluding node_modules/dist/.git"
+  }
+]

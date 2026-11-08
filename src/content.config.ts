@@ -5,7 +5,7 @@ const blog = defineCollection({
 	loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
 	schema: z.object({
 		title: z.string().default(''),
-		description: z.string().default(''),
+		description: z.string().trim().default('').transform((value) => value.replace(/\\n/g, '\n')),
 		pubDate: z.date().default(new Date('1970-01-01')),
 		updatedDate: z.date().optional(),
 		tags: z.array(z.string()).default([]),
@@ -19,13 +19,14 @@ const projects = defineCollection({
 	schema: z.object({
 		lang: z.literal('zh').default('zh'),
 		title: z.string(),
-		description: z.string(),
+		description: z.string().trim().transform((value) => value.replace(/\\n/g, '\n')),
 		date: z.date(),
 		tags: z.array(z.string()).default([]),
 		role: z.string(),
 		url: z.string().url().optional(),
 		urlLabel: z.string().optional(),
 		repo: z.string().url().optional(),
+		updatedDate: z.date().optional(),
 		featured: z.boolean().default(false),
 	}),
 });
@@ -38,10 +39,10 @@ const projects = defineCollection({
 const changelog = defineCollection({
 	loader: glob({ pattern: '**/*.yml', base: './src/content/changelog' }),
 	schema: z.object({
-		type: z.enum(['article-new', 'article-update', 'project-new', 'feature', 'site']),
+		type: z.enum(['article-new', 'article-update', 'project-new', 'project-update', 'feature', 'site']),
 		source: z.enum(['automatic', 'manual']).default('manual'),
 		title: z.string().min(1),
-		description: z.string().default(''),
+		description: z.string().trim().default('').transform((value) => value.replace(/\\n/g, '\n')),
 		date: z.coerce.date(),
 		ref: z.string().optional(),
 		link: z.string().optional(),

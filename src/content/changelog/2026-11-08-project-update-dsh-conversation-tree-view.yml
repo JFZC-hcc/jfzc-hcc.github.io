@@ -1,0 +1,7 @@
+# 由 npm run changelog:sync 自动生成，可以直接编辑本文件后提交。
+type: project-update
+source: automatic
+title: DeepSeek Harness 会话分支树插件
+description: 改变了文本链接显示的问题
+date: '2026-11-08'
+ref: projects/dsh-conversation-tree-view

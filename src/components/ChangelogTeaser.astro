@@ -3,10 +3,15 @@ import {
 	CHANGELOG_TYPE_LABELS,
 	formatChangelogDate,
 	getChangelogEntries,
+	type ChangelogType,
 } from '../utils/changelog';
 
 const limit = 5;
-const entries = (await getChangelogEntries()).slice(0, limit);
+/** 首页只留新内容与人工公告；文章/项目更新只在 /changelog 里作为后继项展示。 */
+const homeTypes = new Set<ChangelogType>(['article-new', 'project-new', 'feature', 'site']);
+const entries = (await getChangelogEntries())
+	.filter((entry) => homeTypes.has(entry.type))
+	.slice(0, limit);
 ---
 
 <div

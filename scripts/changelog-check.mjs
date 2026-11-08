@@ -48,10 +48,11 @@ function main() {
 			warnings.push(`link 建议以 / 或 http(s):// 开头: ${entry.file}`);
 		}
 
-		if (entry.data.type === 'article-update' && !entry.data.draft) {
+		if ((entry.data.type === 'article-update' || entry.data.type === 'project-update') && !entry.data.draft) {
 			const description = (entry.data.description ?? '').trim();
 			if (description === '' || description === UPDATE_PLACEHOLDER) {
-				errors.push(`文章更新公告缺少说明: ${entry.file}`);
+				const kind = entry.data.type === 'project-update' ? '项目' : '文章';
+				errors.push(`${kind}更新公告缺少说明: ${entry.file}`);
 			}
 		}
 
@@ -98,12 +99,34 @@ function main() {
 			const updatedDate = dateOnly(post.data.updatedDate);
 			if (updatedDate > today) {
 				warnings.push(`文章《${title}》的 updatedDate 在未来: ${updatedDate}`);
+			} else if (updatedDate < pubDate) {
+				warnings.push(`文章《${title}》的 updatedDate 早于 pubDate: ${updatedDate}`);
 			} else if (
+				updatedDate > pubDate &&
 				updatedDate >= startDate &&
 				!hasEntry('article-update', `blog/${post.id}`, updatedDate)
 			) {
 				errors.push(`文章《${title}》更新于 ${updatedDate}，但缺少文章更新公告（运行 npm run changelog:sync）`);
 			}
+		}
+	}
+
+	for (const project of projects) {
+		if (!project.data.updatedDate) continue;
+
+		const title = project.data.title || project.id;
+		const updatedDate = dateOnly(project.data.updatedDate);
+		const publishedDate = dateOnly(project.data.date);
+		if (updatedDate > today) {
+			warnings.push(`项目《${title}》的 updatedDate 在未来: ${updatedDate}`);
+		} else if (updatedDate < publishedDate) {
+			warnings.push(`项目《${title}》的 updatedDate 早于 date: ${updatedDate}`);
+		} else if (
+			updatedDate > publishedDate &&
+			updatedDate >= startDate &&
+			!hasEntry('project-update', `projects/${project.id}`, updatedDate)
+		) {
+			errors.push(`项目《${title}》更新于 ${updatedDate}，但缺少项目更新公告（运行 npm run changelog:sync）`);
 		}
 	}
 
