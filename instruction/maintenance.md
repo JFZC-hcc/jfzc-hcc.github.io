@@ -190,7 +190,6 @@ nav: [
     { label: "关于我", href: "/about" },
     { label: "项目", href: "/projects" },
     { label: "博客", href: "/blog" },
-    { label: "更新", href: "/changelog" },
     { label: "联系", href: "/contact" },
 ],
 ```
@@ -478,9 +477,8 @@ link: /blog            # 可选，站内以 / 开头，站外写完整 URL
 
 ### 展示位置
 
-- 首页「最近更新」：最近 5 条。
+- 首页左侧「最近更新」卡片：最近 5 条，点击标题或「查看全部更新」进入历史页。
 - `/changelog`：全部公告，按年份分组。
-- 顶部导航「更新」进入历史页。
 
 ### 阻塞规则
 

@@ -80,14 +80,7 @@ const siteConfigs = {
 			{ label: "关于我", href: "/about" },
 			{ label: "项目", href: "/projects" },
 			{ label: "博客", href: "/blog" },
-			{ label: "更新", href: "/changelog" },
 			{ label: "联系", href: "/contact" },
-		],
-		quickLinks: [
-			{ label: "博客", href: "/blog", icon: "文" },
-			{ label: "项目", href: "/projects", icon: "作" },
-			{ label: "关于", href: "/about", icon: "我" },
-			{ label: "联系", href: "/contact", icon: "@" },
 		],
 		today: {
 			title: "目前的个人工作进度",
@@ -146,16 +139,6 @@ const siteConfigs = {
 							title: "最新博客",
 							description: "JFZC的碎碎念博客",
 							limit: 3,
-						},
-					},
-					{
-						type: "changelog",
-						props: {
-							kicker: "Changelog",
-							title: "最近更新",
-							description: "网站最近发生的变化",
-							limit: 5,
-							showArchiveLink: true,
 						},
 					},
 					{
