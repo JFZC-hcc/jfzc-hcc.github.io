@@ -48,6 +48,26 @@ body {
 	color: #d4d4d8;
 }
 
+.prose-content img {
+	display: block;
+	margin: 1.2em auto;
+	max-width: 100%;
+	height: auto;
+	border-radius: 6px;
+}
+
+.prose-content figure {
+	margin: 1.5em auto;
+	text-align: center;
+}
+
+.prose-content figcaption {
+	font-size: 0.9em;
+	color: #8a8a8a;
+	line-height: 1.6;
+	margin-top: 4px;
+}
+
 .prose-content h1,
 .prose-content h2,
 .prose-content h3,

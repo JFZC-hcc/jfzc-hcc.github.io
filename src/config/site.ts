@@ -99,7 +99,7 @@ const siteConfigs = {
 			socialCardCta: "查看主页",
 		},
 		home: {
-			eyebrowNote: "一个目前没什么技术但是对计算机学科抱有热情的人",
+			eyebrowNote: "galgame、音乐游戏、计算机技术",
 			headline: "欢迎来到属于JFZC的小站",
 			intro: "这里是JFZC的小博客网站，用来存放个人的一些碎碎念之类的玩意",
 			primaryCta: { label: "碎碎念", href: "/blog" },

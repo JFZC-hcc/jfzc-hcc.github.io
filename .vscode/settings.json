@@ -1,0 +1,8 @@
+{
+  "markdown-image.base.uploadMethod": "SFTP",
+  "markdown-image.local.path": "/public/blog",
+  "markdown-image.local.referencePath": "/blog/${mdname}/",
+  "markdown-image.base.fileNameFormat": "${mdname}/${hash}",
+  "markdown-image.sftp.path": "/public/blog",
+  "markdown-image.sftp.referencePath": "/blog/${mdname}/"
+}
